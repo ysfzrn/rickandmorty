@@ -2,8 +2,7 @@ import React from 'react';
 import {View, Text, FlatList} from 'react-native';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {ListCard, Loading} from '../../components';
-import theme from '../../utils/theme';
+import {ListCard, Loading, NoDataFound} from '../../components';
 
 const episodeQuery = gql`
   query episodes( $page: Int) {
@@ -26,7 +25,6 @@ const episodeQuery = gql`
 
 const EpisodeList = ({cardPress}) => {
   handleEpisodeUpdateQuery = (previousResult, fetchMoreResult, data) => {
-    console.log('EpisodeList onEndReached');
     if (!fetchMoreResult || !data.episodes || data.episodes.info.next === null) {
       return previousResult;
     }
@@ -53,9 +51,6 @@ const EpisodeList = ({cardPress}) => {
       }}
     >
       {({data, error, fetchMore, refetch, loading, ...others}) => {
-        console.log('error', error);
-        console.log('data', data);
-        console.log('others', others);
         if (!loading && data && !error) {
           if (data.episodes.results) {
             return (
@@ -89,9 +84,9 @@ const EpisodeList = ({cardPress}) => {
                 }}
               />
             );
-          } else {
-            return <View><Text>No data found</Text></View>;
           }
+        } else if (error) {
+          return <NoDataFound />;
         } else {
           return <Loading />;
         }

@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, FlatList} from 'react-native';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {Loading, DetailCard} from '../../components';
+import {Loading, DetailCard, NoDataFound} from '../../components';
 
 const episodeQuery = gql`
   query episodes( $page: Int, $episode: String ) {
@@ -62,9 +62,9 @@ const CharacterList = ({episode}) => {
                 showsVerticalScrollIndicator={false}
               />
             );
-          } else {
-            return <View><Text>No data found</Text></View>;
           }
+        } else if (error) {
+          return <NoDataFound />;
         } else {
           return <Loading />;
         }

@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, FlatList} from 'react-native';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {ListCard, Loading, DetailCard} from '../../components';
+import {ListCard, Loading, DetailCard, NoDataFound} from '../../components';
 // locations(page: $page, filter:{dimension:$dimension })
 const residentQuery = gql`
   query locations( $page: Int, $planet: String ) {
@@ -43,10 +43,7 @@ const ResidentList = ({planet}) => {
       }}
     >
       {({data, error, fetchMore, refetch, loading, ...others}) => {
-        console.log('error', error);
-        console.log('data', data);
-        console.log('others', others);
-        if (!loading && data && !error) {
+        if (!loading && data) {
           if (data.locations.results) {
             return (
               <FlatList
@@ -60,9 +57,9 @@ const ResidentList = ({planet}) => {
                 showsVerticalScrollIndicator={false}
               />
             );
-          } else {
-            return <View><Text>No data found</Text></View>;
           }
+        } else if (error) {
+          return <NoDataFound />;
         } else {
           return <Loading />;
         }

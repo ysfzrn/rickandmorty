@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage && open coverage/lcov-report/index.html"
   },
   "dependencies": {
     "apollo-boost": "^0.1.23",
@@ -18,12 +19,23 @@
     "react-navigation": "^3.0.9"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "babel-jest": "23.6.0",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.51.1",
-    "react-test-renderer": "16.6.3"
+    "react-test-renderer": "16.6.3",
+    "waait": "^1.0.2"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "transform": {
+      "^.+\\.(js)$": "<rootDir>/node_modules/react-native/jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-native|my-project|react-native-button)"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,mjs}"
+    ]
   }
 }

@@ -7,6 +7,10 @@ import LocationList from './locationList';
 
 // create a component
 class Locations extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   static navigationOptions = ({navigation}) => {
     return {
       headerTitle: <Header />,
@@ -40,5 +44,4 @@ const styles = StyleSheet.create({
   }
 });
 
-//make this component available to the app
 export default Locations;
