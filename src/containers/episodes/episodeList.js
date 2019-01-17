@@ -23,7 +23,7 @@ const episodeQuery = gql`
   }
 `;
 
-const EpisodeList = ({cardPress}) => {
+class EpisodeList extends React.PureComponent {
   handleEpisodeUpdateQuery = (previousResult, fetchMoreResult, data) => {
     if (!fetchMoreResult || !data.episodes || data.episodes.info.next === null) {
       return previousResult;
@@ -43,56 +43,64 @@ const EpisodeList = ({cardPress}) => {
     return newList;
   };
 
-  return (
-    <Query
-      query={episodeQuery}
-      variables={{
-        page: 1
-      }}
-    >
-      {({data, error, fetchMore, refetch, loading, ...others}) => {
-        if (!loading && data && !error) {
-          if (data.episodes.results) {
-            return (
-              <FlatList
-                refreshing={loading}
-                onRefresh={() => refetch()}
-                keyExtractor={item => {
-                  return item.id;
-                }}
-                data={data.episodes.results}
-                renderItem={({item}) => (
-                  <ListCard
-                    secondary
-                    item={item}
-                    name={item.name}
-                    text={item.air_date}
-                    cardPress={cardPress}
-                  />
-                )}
-                showsVerticalScrollIndicator={false}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={() => {
-                  return data.episodes.info.next !== null && <Loading />;
-                }}
-                onEndReached={() => {
-                  fetchMore({
-                    variables: {page: data.episodes.info.next},
-                    updateQuery: (previousResult, {fetchMoreResult}) =>
-                      this.handleEpisodeUpdateQuery(previousResult, fetchMoreResult, data)
-                  });
-                }}
-              />
-            );
+  render() {
+    const {cardPress} = this.props;
+    return (
+      <Query
+        query={episodeQuery}
+        variables={{
+          page: 1
+        }}
+      >
+        {({data, error, fetchMore, refetch, loading}) => {
+          console.log('data', data);
+          console.log('loading', loading);
+          console.log('error', error);
+          if (!loading && data && !error) {
+            if (data.episodes.results) {
+              return (
+                <FlatList
+                  refreshing={loading}
+                  onRefresh={() => refetch()}
+                  keyExtractor={item => {
+                    return item.id;
+                  }}
+                  data={data.episodes.results}
+                  renderItem={({item}) => (
+                    <ListCard
+                      secondary
+                      item={item}
+                      name={item.name}
+                      text={item.air_date}
+                      cardPress={cardPress}
+                    />
+                  )}
+                  showsVerticalScrollIndicator={false}
+                  onEndReachedThreshold={0.5}
+                  ListFooterComponent={() => {
+                    return data.episodes.info.next !== null && <Loading />;
+                  }}
+                  onEndReached={() => {
+                    fetchMore({
+                      variables: {page: data.episodes.info.next},
+                      updateQuery: (previousResult, {fetchMoreResult}) =>
+                        this.handleEpisodeUpdateQuery(previousResult, fetchMoreResult, data)
+                    });
+                  }}
+                />
+              );
+            } else {
+              return <NoDataFound />;
+            }
+          } else if (error) {
+            return <NoDataFound />;
+          } else {
+            return <Loading />;
           }
-        } else if (error) {
-          return <NoDataFound />;
-        } else {
-          return <Loading />;
-        }
-      }}
-    </Query>
-  );
-};
+        }}
+      </Query>
+    );
+  }
+}
 
 export default EpisodeList;

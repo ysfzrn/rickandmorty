@@ -1,19 +1,19 @@
 //import liraries
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Platform, StyleSheet} from 'react-native';
 import {Header} from '../../components';
 import theme from '../../utils/theme';
 import EpisodeList from './episodeList';
 
 // create a component
 class Episodes extends Component {
-  static navigationOptions = ({navigation}) => {
+  static navigationOptions = () => {
     return {
       headerTitle: <Header />,
       headerStyle: {
         backgroundColor: theme.color.background,
         height: theme.elements.headerHeight,
-        marginHorizontal: theme.space.medium
+        marginHorizontal: Platform.OS === 'android' ? 0 : theme.space.medium
       }
     };
   };

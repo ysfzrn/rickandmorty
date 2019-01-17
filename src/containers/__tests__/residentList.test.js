@@ -2,20 +2,20 @@ import React from 'react';
 import 'react-native';
 import renderer from 'react-test-renderer';
 import {MockedProvider} from 'react-apollo/test-utils';
-import LocationList from '../locations/locationList';
-import {locationQuery} from '../locations/locationList';
+import ResidentList from '../locationDetail/residentList';
+import {residentQuery} from '../locationDetail/residentList';
 import wait from 'waait';
-import {ListCard} from '../../components';
+import {DetailCard} from '../../components';
 import {shallow} from 'enzyme';
 import {TouchableOpacity} from 'react-native';
 
-it('LocationList renders with loading', async () => {
+it('residentList renders with loading', async () => {
   const mocks = [];
 
   const rendered = renderer
     .create(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <LocationList />
+        <ResidentList />
       </MockedProvider>
     )
     .toJSON();
@@ -23,12 +23,13 @@ it('LocationList renders with loading', async () => {
   expect(rendered.children[0].type).toContain('ActivityIndicator');
 });
 
-it('LocationList renders with data', async () => {
+it('ResidentList renders with data', async () => {
   const mocks = {
     request: {
-      query: locationQuery,
+      query: residentQuery,
       variables: {
-        page: 1
+        page: 1,
+        name: 'Earth (C-137)'
       }
     },
     result: {
@@ -42,10 +43,22 @@ it('LocationList renders with data', async () => {
           },
           results: [
             {
-              id: '1',
-              name: 'Earth (C-137)',
               dimension: 'Dimension C-137',
-              type: 'Planet'
+              residents: [
+                {
+                  id: '38',
+                  name: 'Beth Smith',
+                  status: 'Alive',
+                  species: 'Human',
+                  gender: 'Female',
+                  type: '',
+                  image: 'https://rickandmortyapi.com/api/character/avatar/38.jpeg',
+                  location: {
+                    name: 'Earth (C-137)',
+                    dimension: 'Dimension C-137'
+                  }
+                }
+              ]
             }
           ]
         }
@@ -55,7 +68,7 @@ it('LocationList renders with data', async () => {
 
   const rendered = renderer.create(
     <MockedProvider mocks={[mocks]} addTypename={false}>
-      <LocationList />
+      <ResidentList />
     </MockedProvider>
   );
 
@@ -64,32 +77,20 @@ it('LocationList renders with data', async () => {
   const FlatListComponent = rendered.toJSON();
 
   //Query componenti data ile birlikte doğru sonuç üretiyor mu ?
+  console.log('FlatListComponent.props', FlatListComponent);
   const element = FlatListComponent.props.data[0];
-  expect(element.name).toBe('Earth (C-137)');
-  expect(element.id).toBe('1');
+  expect(element.name).toBe('Beth Smith');
+  expect(element.id).toBe('38');
 
   //FlatList componentin ilk elemanı alınca başarılı şekilde render ediliyor mu ?
-  const listCard = renderer.create(
-    <ListCard element={element} name={element.name} text={element.dimension} cardPress={() => {}} />
-  );
-  expect(listCard).toBeTruthy();
-
-  //listelenen elementlere basınca, tetikleniyorlar mı
-  //user interaction testi için enzyme kullanıyoruz.
-  const callback = jest.fn();
-  const wrapper = shallow(
-    <ListCard element={element} name={element.name} text={element.dimension} cardPress={callback} />
-  );
-
-  expect(wrapper.find(TouchableOpacity).length).toBe(1);
-  wrapper.find(TouchableOpacity).first().props().onPress(item => console.log('item', item));
-  expect(callback).toHaveBeenCalled();
+  const detailCard = renderer.create(<DetailCard element={element} />);
+  expect(detailCard).toBeTruthy();
 });
 
-it('LocationList renders with error / no data found', async () => {
+it('ResidentList renders with error / no data found', async () => {
   const mocks = {
     request: {
-      query: locationQuery,
+      query: residentQuery,
       variables: {
         page: 1
       }
@@ -99,7 +100,7 @@ it('LocationList renders with error / no data found', async () => {
 
   const NoDataFoundComponent = renderer.create(
     <MockedProvider mocks={[mocks]} addTypename={false}>
-      <LocationList />
+      <ResidentList />
     </MockedProvider>
   );
 
@@ -108,7 +109,6 @@ it('LocationList renders with error / no data found', async () => {
   //ReferenceError: You are trying to `import` a file after the Jest environment has been torn down.
   //Bu hatayı gideremedim ama test success alıyor
 
-  console.log('rendered error', NoDataFoundComponent.toJSON().children[0].props.source.testUri);
   expect(NoDataFoundComponent.toJSON().children[0].props.source.testUri).toBe(
     '../../../src/assets/nodatafound.png'
   );

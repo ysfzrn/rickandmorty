@@ -4,7 +4,7 @@ import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
 import {ListCard, Loading, DetailCard, NoDataFound} from '../../components';
 // locations(page: $page, filter:{dimension:$dimension })
-const residentQuery = gql`
+export const residentQuery = gql`
   query locations( $page: Int, $planet: String ) {
     locations(page: $page, filter:{name:$planet }) {
       info {

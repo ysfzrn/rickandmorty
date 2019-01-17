@@ -1,5 +1,6 @@
 //import liraries
-import React, {Component} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {View, Text, Image} from 'react-native';
 import styles from './styles';
 import theme from '../../utils/theme';
@@ -37,6 +38,27 @@ const DetailCard = ({item, secondary}) => {
       </View>
     </View>
   );
+};
+
+DetailCard.propTypes = {
+  secondary: PropTypes.bool,
+  item: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    status: PropTypes.string,
+    species: PropTypes.string,
+    gender: PropTypes.string,
+    type: PropTypes.string,
+    image: PropTypes.string,
+    location: PropTypes.shape({
+      name: PropTypes.string,
+      dimension: PropTypes.string
+    })
+  })
+};
+
+DetailCard.defaultProps = {
+  secondary: false
 };
 
 //make this component available to the app

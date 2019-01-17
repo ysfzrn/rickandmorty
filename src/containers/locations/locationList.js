@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {FlatList} from 'react-native';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {ListCard, Loading} from '../../components';
+import {ListCard, Loading, NoDataFound} from '../../components';
 
 export const locationQuery = gql`
   query locations( $page: Int) {
@@ -46,8 +46,13 @@ class LocationList extends React.PureComponent {
     };
     return newList;
   };
-  render() {
+
+  renderItem = ({item}) => {
     const {cardPress} = this.props;
+    return <ListCard item={item} name={item.name} text={item.dimension} cardPress={cardPress} />;
+  };
+
+  render() {
     return (
       <Query
         query={locationQuery}
@@ -55,9 +60,8 @@ class LocationList extends React.PureComponent {
           page: 1
         }}
       >
-        {({data, error, fetchMore, refetch, loading, ...others}) => {
-          console.log('data', data);
-          if (!loading && data) {
+        {({data, error, fetchMore, refetch, loading}) => {
+          if (!loading && data && !error) {
             if (data.locations.results) {
               return (
                 <FlatList
@@ -66,15 +70,8 @@ class LocationList extends React.PureComponent {
                   keyExtractor={item => {
                     return item.id;
                   }}
-                  data={data.locations.results || []}
-                  renderItem={({item}) => (
-                    <ListCard
-                      item={item}
-                      name={item.name}
-                      text={item.dimension}
-                      cardPress={cardPress}
-                    />
-                  )}
+                  data={data.locations.results}
+                  renderItem={this.renderItem}
                   showsVerticalScrollIndicator={false}
                   onEndReachedThreshold={0.5}
                   ListFooterComponent={() => {
@@ -89,11 +86,11 @@ class LocationList extends React.PureComponent {
                   }}
                 />
               );
-            } else if (!data) {
-              return <View><Text>No data found</Text></View>;
             } else {
-              return <View><Text>No data found</Text></View>;
+              return <NoDataFound />;
             }
+          } else if (error) {
+            return <NoDataFound />;
           } else {
             return <Loading />;
           }

@@ -1,6 +1,6 @@
-//import liraries
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import PropTypes from 'prop-types';
+import {View, StyleSheet, Platform} from 'react-native';
 import {Header} from '../../components';
 import theme from '../../utils/theme';
 import LocationList from './locationList';
@@ -11,13 +11,13 @@ class Locations extends Component {
     super(props);
   }
 
-  static navigationOptions = ({navigation}) => {
+  static navigationOptions = () => {
     return {
       headerTitle: <Header />,
       headerStyle: {
         backgroundColor: theme.color.background,
         height: theme.elements.headerHeight,
-        marginHorizontal: theme.space.medium
+        marginHorizontal: Platform.OS === 'android' ? 0 : theme.space.medium
       }
     };
   };
@@ -43,5 +43,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.color.background
   }
 });
+
+Locations.propTypes = {
+  navigation: PropTypes.object
+};
 
 export default Locations;

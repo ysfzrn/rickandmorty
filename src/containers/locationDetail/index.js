@@ -1,6 +1,6 @@
 //import liraries
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Platform, StyleSheet} from 'react-native';
 import {HeaderDetail, HeaderBack, DetailPageTitle} from '../../components';
 import theme from '../../utils/theme';
 import ResidentList from './residentList';
@@ -14,12 +14,11 @@ class LocationDetail extends Component {
       headerStyle: {
         backgroundColor: theme.color.primary,
         height: theme.elements.headerHeight,
-        marginHorizontal: theme.space.medium
+        marginHorizontal: Platform.OS === 'android' ? 0 : theme.space.medium
       }
     };
   };
   render() {
-    console.log('props', this.props);
     const {navigation} = this.props;
     const location = navigation.state.params.location;
     return (

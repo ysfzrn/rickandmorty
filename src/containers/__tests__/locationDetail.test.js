@@ -1,17 +1,17 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import {MockedProvider} from 'react-apollo/test-utils';
-import Locations from '../locations/index';
+import LocationDetail from '../locationDetail';
 
-const navigation = {navigate: jest.fn()};
+const navigation = {navigate: jest.fn(), state: {params: {location: 'Earth (C-137)'}}};
 
 const mocks = [];
 
-it('Locations container renders successfully', () => {
+it('LocationDetail container renders successfully', () => {
   const rendered = renderer
     .create(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <Locations navigation={navigation} />
+        <LocationDetail navigation={navigation} />
       </MockedProvider>
     )
     .toJSON();

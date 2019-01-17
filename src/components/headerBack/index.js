@@ -1,6 +1,6 @@
 //import liraries
 import React from 'react';
-import {StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, Image, TouchableOpacity, Platform} from 'react-native';
 import theme from '../../utils/theme';
 
 const Back = require('../../assets/back.png');
@@ -18,7 +18,8 @@ const HeaderBack = ({backPress, secondary}) => {
 const styles = StyleSheet.create({
   container: {
     height: theme.elements.headerHeight,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginHorizontal: Platform.OS === 'android' ? theme.space.medium : 0
   },
   back: {
     width: 23,
