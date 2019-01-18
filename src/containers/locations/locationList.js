@@ -1,27 +1,9 @@
 import React from 'react';
-import {FlatList} from 'react-native';
+import {FlatList, View, Text} from 'react-native';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
 import {ListCard, Loading, NoDataFound} from '../../components';
-
-export const locationQuery = gql`
-  query locations( $page: Int) {
-    locations(page: $page) {
-      info {
-        prev
-        next
-        count
-        pages
-      }
-      results {
-        id
-        name
-        dimension
-        type
-      }
-    }
-  }
-`;
+import {locationQuery} from './queries';
 
 class LocationList extends React.PureComponent {
   constructor(props) {
@@ -60,17 +42,21 @@ class LocationList extends React.PureComponent {
           page: 1
         }}
       >
-        {({data, error, fetchMore, refetch, loading}) => {
-          if (!loading && data && !error) {
+        {({data, error, fetchMore, refetch, loading, networkStatus}) => {
+          if (loading) {
+            return <Loading />;
+          } else if (error) {
+            return null;
+          } else {
             if (data.locations.results) {
               return (
                 <FlatList
-                  refreshing={loading}
+                  refreshing={networkStatus === 4}
                   onRefresh={() => refetch()}
                   keyExtractor={item => {
                     return item.id;
                   }}
-                  data={data.locations.results}
+                  data={data.locations.results || []}
                   renderItem={this.renderItem}
                   showsVerticalScrollIndicator={false}
                   onEndReachedThreshold={0.5}
@@ -89,10 +75,6 @@ class LocationList extends React.PureComponent {
             } else {
               return <NoDataFound />;
             }
-          } else if (error) {
-            return <NoDataFound />;
-          } else {
-            return <Loading />;
           }
         }}
       </Query>

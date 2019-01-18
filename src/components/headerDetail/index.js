@@ -1,6 +1,7 @@
 //import liraries
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import PropTypes from 'prop-types';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import theme from '../../utils/theme';
 const {width} = Dimensions.get('screen');
 
@@ -9,6 +10,14 @@ const HeaderDetail = ({secondary}) => {
     backgroundColor: secondary ? theme.color.secondary : theme.color.primary
   };
   return <View style={[styles.container, themeContainer]} />;
+};
+
+HeaderDetail.propTypes = {
+  secondary: PropTypes.bool
+};
+
+HeaderDetail.defaultProps = {
+  secondary: false
 };
 
 // define your styles

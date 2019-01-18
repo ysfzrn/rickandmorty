@@ -1,37 +1,9 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import PropTypes from 'prop-types';
+import {FlatList, Text} from 'react-native';
 import {Query} from 'react-apollo';
-import gql from 'graphql-tag';
-import {ListCard, Loading, DetailCard, NoDataFound} from '../../components';
-// locations(page: $page, filter:{dimension:$dimension })
-export const residentQuery = gql`
-  query locations( $page: Int, $planet: String ) {
-    locations(page: $page, filter:{name:$planet }) {
-      info {
-        prev
-        next
-        count
-        pages
-      }
-      results {
-        dimension
-        residents{
-          id
-          name
-          status
-          species
-          gender
-          type
-          image
-          location{
-            name
-            dimension
-          }
-        }
-      }
-    }
-  }
-`;
+import {Loading, DetailCard, ListHeader} from '../../components';
+import {residentQuery} from './queries';
 
 const ResidentList = ({planet}) => {
   return (
@@ -42,30 +14,33 @@ const ResidentList = ({planet}) => {
         planet: planet
       }}
     >
-      {({data, error, fetchMore, refetch, loading, ...others}) => {
-        if (!loading && data) {
-          if (data.locations.results) {
-            return (
-              <FlatList
-                refreshing={loading}
-                onRefresh={() => refetch()}
-                keyExtractor={item => {
-                  return item.id;
-                }}
-                data={data.locations.results[0].residents}
-                renderItem={({item}) => <DetailCard item={item} />}
-                showsVerticalScrollIndicator={false}
-              />
-            );
-          }
-        } else if (error) {
-          return <NoDataFound />;
-        } else {
+      {({data, error, refetch, loading}) => {
+        if (loading) {
           return <Loading />;
+        } else if (error) {
+          return null;
+        } else {
+          return (
+            <FlatList
+              refreshing={loading}
+              onRefresh={() => refetch()}
+              ListHeaderComponent={() => <ListHeader title="Residents" />}
+              keyExtractor={item => {
+                return item.id;
+              }}
+              data={data.locations.results[0].residents || []}
+              renderItem={({item}) => <DetailCard item={item} />}
+              showsVerticalScrollIndicator={false}
+            />
+          );
         }
       }}
     </Query>
   );
+};
+
+ResidentList.propTypes = {
+  planet: PropTypes.string
 };
 
 export default ResidentList;

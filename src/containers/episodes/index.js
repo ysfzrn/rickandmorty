@@ -7,6 +7,10 @@ import EpisodeList from './episodeList';
 
 // create a component
 class Episodes extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   static navigationOptions = () => {
     return {
       headerTitle: <Header />,

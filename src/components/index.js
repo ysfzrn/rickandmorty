@@ -6,6 +6,7 @@ import ListCard from './listCard';
 import Loading from './loading';
 import DetailPageTitle from './detailPageTitle';
 import DetailCard from './detailCard';
+import ListHeader from './listHeader';
 import NoDataFound from './noDataFound';
 
 export {
@@ -17,5 +18,6 @@ export {
   Loading,
   DetailPageTitle,
   DetailCard,
+  ListHeader,
   NoDataFound
 };

@@ -2,12 +2,25 @@ import React from 'react';
 import 'react-native';
 import renderer from 'react-test-renderer';
 import {MockedProvider} from 'react-apollo/test-utils';
+import LocationDetail from '../locationDetail';
 import ResidentList from '../locationDetail/residentList';
-import {residentQuery} from '../locationDetail/residentList';
 import wait from 'waait';
 import {DetailCard} from '../../components';
-import {shallow} from 'enzyme';
-import {TouchableOpacity} from 'react-native';
+import {residentQuery} from '../locationDetail/queries';
+
+it('LocationDetail container renders successfully', () => {
+  const navigation = {navigate: jest.fn(), state: {params: {location: 'Earth (C-137)'}}};
+
+  const rendered = renderer
+    .create(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <LocationDetail navigation={navigation} />
+      </MockedProvider>
+    )
+    .toJSON();
+
+  expect(rendered).toBeTruthy();
+});
 
 it('residentList renders with loading', async () => {
   const mocks = [];
@@ -29,7 +42,7 @@ it('ResidentList renders with data', async () => {
       query: residentQuery,
       variables: {
         page: 1,
-        name: 'Earth (C-137)'
+        planet: 'Earth (C-137)'
       }
     },
     result: {
@@ -68,7 +81,7 @@ it('ResidentList renders with data', async () => {
 
   const rendered = renderer.create(
     <MockedProvider mocks={[mocks]} addTypename={false}>
-      <ResidentList />
+      <ResidentList planet="Earth (C-137)" />
     </MockedProvider>
   );
 
@@ -77,39 +90,11 @@ it('ResidentList renders with data', async () => {
   const FlatListComponent = rendered.toJSON();
 
   //Query componenti data ile birlikte doğru sonuç üretiyor mu ?
-  console.log('FlatListComponent.props', FlatListComponent);
   const element = FlatListComponent.props.data[0];
   expect(element.name).toBe('Beth Smith');
   expect(element.id).toBe('38');
 
   //FlatList componentin ilk elemanı alınca başarılı şekilde render ediliyor mu ?
-  const detailCard = renderer.create(<DetailCard element={element} />);
+  const detailCard = renderer.create(<DetailCard item={element} />);
   expect(detailCard).toBeTruthy();
-});
-
-it('ResidentList renders with error / no data found', async () => {
-  const mocks = {
-    request: {
-      query: residentQuery,
-      variables: {
-        page: 1
-      }
-    },
-    error: new Error('upps')
-  };
-
-  const NoDataFoundComponent = renderer.create(
-    <MockedProvider mocks={[mocks]} addTypename={false}>
-      <ResidentList />
-    </MockedProvider>
-  );
-
-  await wait(0);
-  jest.useFakeTimers();
-  //ReferenceError: You are trying to `import` a file after the Jest environment has been torn down.
-  //Bu hatayı gideremedim ama test success alıyor
-
-  expect(NoDataFoundComponent.toJSON().children[0].props.source.testUri).toBe(
-    '../../../src/assets/nodatafound.png'
-  );
 });

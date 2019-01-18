@@ -1,5 +1,6 @@
 //import liraries
 import React from 'react';
+import PropTypes from 'prop-types';
 import {View, Text, StyleSheet} from 'react-native';
 import theme from '../../utils/theme';
 
@@ -48,6 +49,13 @@ const styles = StyleSheet.create({
     color: theme.color.primaryLight
   }
 });
+
+DetailPageTitle.propTypes = {
+  secondary: PropTypes.bool,
+  mainTitle: PropTypes.string,
+  subtitle: PropTypes.string,
+  subtitleTwo: PropTypes.string
+};
 
 //make this component available to the app
 export default DetailPageTitle;

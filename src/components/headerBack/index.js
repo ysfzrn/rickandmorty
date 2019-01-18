@@ -1,5 +1,6 @@
 //import liraries
 import React from 'react';
+import PropTypes from 'prop-types';
 import {StyleSheet, Image, TouchableOpacity, Platform} from 'react-native';
 import theme from '../../utils/theme';
 
@@ -12,6 +13,15 @@ const HeaderBack = ({backPress, secondary}) => {
       <Image style={styles.back} source={secondary ? BackBlack : Back} />
     </TouchableOpacity>
   );
+};
+
+HeaderBack.propTypes = {
+  backPress: PropTypes.func.isRequired,
+  secondary: PropTypes.bool
+};
+
+HeaderBack.defaultProps = {
+  secondary: false
 };
 
 // define your styles

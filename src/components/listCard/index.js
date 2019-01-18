@@ -1,5 +1,6 @@
 //import liraries
 import React from 'react';
+import PropTypes from 'prop-types';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import styles from './styles';
 import theme from '../../utils/theme';
@@ -32,6 +33,19 @@ const LocationCard = ({item, name, text, secondary, cardPress}) => {
       <Text style={[styles.cardText, themeText]}>{text}</Text>
     </TouchableOpacity>
   );
+};
+
+LocationCard.propTypes = {
+  item: PropTypes.object,
+  name: PropTypes.string,
+  text: PropTypes.string,
+  secondary: PropTypes.bool,
+  cardPress: PropTypes.func
+};
+
+LocationCard.defaultProps = {
+  cardPress: () => {},
+  secondary: false
 };
 
 export default LocationCard;

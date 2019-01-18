@@ -1,6 +1,6 @@
 //import liraries
-import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, Dimensions} from 'react-native';
+import React from 'react';
+import {View, StyleSheet, Image, Dimensions} from 'react-native';
 import theme from '../../utils/theme';
 const {width} = Dimensions.get('screen');
 

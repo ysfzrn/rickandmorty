@@ -1,29 +1,13 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import {FlatList} from 'react-native';
 import {Query} from 'react-apollo';
-import gql from 'graphql-tag';
 import {ListCard, Loading, NoDataFound} from '../../components';
-
-const episodeQuery = gql`
-  query episodes( $page: Int) {
-    episodes(page: $page) {
-      info{
-        count
-        pages
-        next
-        prev
-      }
-      results{
-        id
-        name
-        air_date
-        episode
-      }
-    }
-  }
-`;
+import {episodeQuery} from './queries';
 
 class EpisodeList extends React.PureComponent {
+  constructor(props) {
+    super(props);
+  }
   handleEpisodeUpdateQuery = (previousResult, fetchMoreResult, data) => {
     if (!fetchMoreResult || !data.episodes || data.episodes.info.next === null) {
       return previousResult;
@@ -53,10 +37,11 @@ class EpisodeList extends React.PureComponent {
         }}
       >
         {({data, error, fetchMore, refetch, loading}) => {
-          console.log('data', data);
-          console.log('loading', loading);
-          console.log('error', error);
-          if (!loading && data && !error) {
+          if (loading) {
+            return <Loading />;
+          } else if (error) {
+            return null;
+          } else {
             if (data.episodes.results) {
               return (
                 <FlatList
@@ -65,7 +50,7 @@ class EpisodeList extends React.PureComponent {
                   keyExtractor={item => {
                     return item.id;
                   }}
-                  data={data.episodes.results}
+                  data={data.episodes.results || []}
                   renderItem={({item}) => (
                     <ListCard
                       secondary
@@ -92,10 +77,6 @@ class EpisodeList extends React.PureComponent {
             } else {
               return <NoDataFound />;
             }
-          } else if (error) {
-            return <NoDataFound />;
-          } else {
-            return <Loading />;
           }
         }}
       </Query>

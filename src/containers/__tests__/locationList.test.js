@@ -3,18 +3,31 @@ import 'react-native';
 import renderer from 'react-test-renderer';
 import {MockedProvider} from 'react-apollo/test-utils';
 import LocationList from '../locations/locationList';
-import {locationQuery} from '../locations/locationList';
+import Locations from '../locations';
 import wait from 'waait';
 import {ListCard} from '../../components';
 import {shallow} from 'enzyme';
 import {TouchableOpacity} from 'react-native';
+import {locationQuery} from '../locations/queries';
 
-it('LocationList renders with loading', async () => {
-  const mocks = [];
+const navigation = {navigate: jest.fn()};
 
+it('Locations container renders successfully', () => {
   const rendered = renderer
     .create(
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={[]} addTypename={false}>
+        <Locations navigation={navigation} />
+      </MockedProvider>
+    )
+    .toJSON();
+
+  expect(rendered).toBeTruthy();
+});
+
+it('LocationList renders with loading', async () => {
+  const rendered = renderer
+    .create(
+      <MockedProvider mocks={[]} addTypename={false}>
         <LocationList />
       </MockedProvider>
     )
@@ -78,38 +91,10 @@ it('LocationList renders with data', async () => {
   //user interaction testi için enzyme kullanıyoruz.
   const callback = jest.fn();
   const wrapper = shallow(
-    <ListCard element={element} name={element.name} text={element.dimension} cardPress={callback} />
+    <ListCard item={element} name={element.name} text={element.dimension} cardPress={callback} />
   );
 
   expect(wrapper.find(TouchableOpacity).length).toBe(1);
   wrapper.find(TouchableOpacity).first().props().onPress(item => console.log('item', item));
   expect(callback).toHaveBeenCalled();
-});
-
-it('LocationList renders with error / no data found', async () => {
-  const mocks = {
-    request: {
-      query: locationQuery,
-      variables: {
-        page: 1
-      }
-    },
-    error: new Error('upps')
-  };
-
-  const NoDataFoundComponent = renderer.create(
-    <MockedProvider mocks={[mocks]} addTypename={false}>
-      <LocationList />
-    </MockedProvider>
-  );
-
-  await wait(0);
-  jest.useFakeTimers();
-  //ReferenceError: You are trying to `import` a file after the Jest environment has been torn down.
-  //Bu hatayı gideremedim ama test success alıyor
-
-  console.log('rendered error', NoDataFoundComponent.toJSON().children[0].props.source.testUri);
-  expect(NoDataFoundComponent.toJSON().children[0].props.source.testUri).toBe(
-    '../../../src/assets/nodatafound.png'
-  );
 });

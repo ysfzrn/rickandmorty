@@ -1,59 +1,27 @@
 import React from 'react';
-import {View, Text, FlatList} from 'react-native';
+import PropTypes from 'prop-types';
+import {FlatList} from 'react-native';
 import {Query} from 'react-apollo';
-import gql from 'graphql-tag';
-import {Loading, DetailCard, NoDataFound} from '../../components';
-
-const episodeQuery = gql`
-  query episodes( $page: Int, $episode: String ) {
-    episodes(page: $page, filter:{episode:$episode }) {
-      info {
-        prev
-        next
-        count
-        pages
-      }
-      results{
-        id
-        name
-        air_date
-        characters{
-          id
-          name
-          status
-          species
-          gender
-          type
-          image
-          location{
-            name
-          }
-        }
-      }
-    }
-  }
-`;
+import {Loading, DetailCard, NoDataFound, ListHeader} from '../../components';
+import {episodeDetailQuery} from './queries';
 
 const CharacterList = ({episode}) => {
-  console.log('episode', episode);
   return (
     <Query
-      query={episodeQuery}
+      query={episodeDetailQuery}
       variables={{
         page: 1,
         episode: episode
       }}
     >
-      {({data, error, fetchMore, refetch, loading, ...others}) => {
-        console.log('error', error);
-        console.log('data', data);
-        console.log('others', others);
+      {({data, error, fetchMore, refetch, loading}) => {
         if (!loading && data && !error) {
           if (data.episodes.results) {
             return (
               <FlatList
                 refreshing={loading}
                 onRefresh={() => refetch()}
+                ListHeaderComponent={() => <ListHeader title="Characters" />}
                 keyExtractor={item => {
                   return item.id;
                 }}
@@ -71,6 +39,10 @@ const CharacterList = ({episode}) => {
       }}
     </Query>
   );
+};
+
+CharacterList.propTypes = {
+  episode: PropTypes.string
 };
 
 export default CharacterList;
